@@ -1,80 +1,70 @@
 #include"opt_alg.h"
 #if LAB_NO>1
+//x_(i+1)=alfa^i * x_1, gdzie alfa > 1
+//x_(i+1)=x_0+alfa_i * d
 double *expansion(double x0, double d, double alpha, int Nmax, matrix *ud, matrix *ad)
 {
 	double *p = new double[2];
-	solution X0(x0), X1(x0+d);			//d krok alpha 1.1
+	solution X0(x0), X1(x0+d);
 	X0.fit_fun(ud, ad);
 	X1.fit_fun(ud, ad);
-	if (X0.y==X1.y)
+	if (X0.y == X1.y)
 	{
-		p[0] = X0.x();
-		p[1] = X1.x();
-		
+		p[0]=X0.x();
+		p[1]=X1.x();
 		return p;
 	}
-	if (X1.y>X0.y)
+	if (X0.y < X1.y)
 	{
 		d *= -1;
-	
-		X1.x = X0.x + d;
+		X1.x = X0.x+d;
 		X1.fit_fun(ud, ad);
 		if (X1.y >= X0.y)
 		{
 			p[0] = X1.x();
-			p[1] = X0.x() - d;
+			p[1] = X0.x()-d;
 			return p;
 		}
 	}
 	solution X2;
-	int i = 1;	//iterator operacji chyba od 1 bo porówynwaliœmy  punkt x0 i x1 i=???;
-	while (solution::f_calls <= Nmax)				//ustalic wspolczynnik ekspansji jaki?
+	int i = 1;
+	while (true)
 	{
-		X2.x=x0+d+pow(alpha, i);						//X2 = x2=alfa^1*x(1)
-		X2.fit_fun(ud, ad); 
-		if (X1.y <= X2.y) {
+		X2.x = x0+pow(alpha,i)*d;
+		X2.fit_fun(ud, ad);
+		if (X2.y >= X1.y || solution::f_calls > Nmax)
 			break;
-		}
-		X0 = X1;
-		X1 = X2;
+		X0=X1;
+		X1=X2;
 		++i;
 	}
-
-	if (d > 0) {
-		p[0] = X0.x(); 
-		p[1] = X2.x();
-	}
-	else
-	{
-		p[0] = X2.x();
-		p[1] = X0.x();
-	}
+	d > 0 ? p[0] = X0.x(), p[1]=X2.x() : (p[0] = X2.x(),p[1]=X0.x(1));
 	return p;
 }
 
 solution fib(double a, double b, double epsilon, matrix *ud, matrix *ad)
 {
-	int n = static_cast<int>(ceil(log2(sqrt(5)*(b-a) / epsilon) / log2((1+sqrt(5))/2)));							//epsilon=1e-5 b=-100 a=100  l=b-a       k=l/epslion	n=k
+	int n = static_cast<int>(ceil(log2(sqrt(5)*(b - a) / epsilon) / log2(((1 + sqrt(5)) / 2))));
 	int *F = new int[n] {1, 1};
 	for (int i = 2; i < n; ++i)
-		F[i] = F[i - 2] + F[i - 1];
+		F[i] = F[i-2]+F[i-1];
 	solution A(a), B(b), C, D;
-	C.x = ???;
-	D.x = ???;
+	C.x = B.x - 1.0 * F[n - 2] / F[n - 1] * (B.x - A.x);
+	D.x = A.x + B.x - C.x;
 	C.fit_fun(ud, ad);
 	D.fit_fun(ud, ad);
 	for (int i = 0; i <= n - 3; ++i)
 	{
-		if (???)
-			???;
+		if (C.y < D.y)
+			B=D;
 		else
-			???;
-		C.x = ???;
-		D.x = ???;
+			A=C;
+		C.x = B.x - 1.0 * F[n - i - 2] / F[n - i - 1] * (B.x - A.x);
+		D.x = A.x+B.x-C.x;
 		C.fit_fun(ud, ad);
 		D.fit_fun(ud, ad);
 #if LAB_NO==2 && LAB_PART==2
-		???;
+		(*ud).add_row((B.x-A.x)());
 #endif
 	}
 	return C;
@@ -82,8 +72,8 @@ solution fib(double a, double b, double epsilon, matrix *ud, matrix *ad)
 
 solution lag(double a, double b, double epsilon, double gamma, int Nmax, matrix *ud, matrix *ad)
 {
-	solution A(???), B(???), C, D, D_old(a);
-	C.x = ???;
+	solution A(a), B(b), C, D, D_old(a);
+	C.x = (a+b)/2;
 	A.fit_fun(ud, ad);
 	B.fit_fun(ud, ad);
 	C.fit_fun(ud, ad);
@@ -92,33 +82,33 @@ solution lag(double a, double b, double epsilon, double gamma, int Nmax, matrix 
 	{
 		l = A.y(0)*(pow(B.x(0), 2) - pow(C.x(0), 2)) + B.y(0)*(pow(C.x(0), 2) - pow(A.x(0), 2)) + C.y(0)*(pow(A.x(0), 2) - pow(B.x(0), 2));
 		m = A.y(0)*(B.x(0) - C.x(0)) + B.y(0)*(C.x(0) - A.x(0)) + C.y(0)*(A.x(0) - B.x(0));
-		if (???)
+		if (m<=0)
 		{
 			C.x = NAN;
 			C.y = NAN;
 			return C;
 		}
-		D.x = ???;
+		D.x = 0.5*l/m;
 		D.fit_fun(ud, ad);
-		if (???)
+		if (A.x <= D.x && D.x <= C.x)
 		{
-			if (???)
+			if (D.y<C.y)
 			{
-				???;
-				???;
+				B=C;
+				C=D;
 			}
 			else
-				???;
+				A=B;
 		}
-		else if (???)
+		else if (C.x<=D.x && D.x <= B.x)
 		{
-			if (???)
+			if (D.y<C.y)
 			{
-				???;
-				???;
+				A=C;
+				C=D;
 			}
 			else
-				???;
+				B=D;
 		}
 		else
 		{
@@ -127,9 +117,9 @@ solution lag(double a, double b, double epsilon, double gamma, int Nmax, matrix 
 			return C;
 		}
 #if LAB_NO==2 && LAB_PART==2
-		???
+		(*ud).add_row((B.x - A.x)());
 #endif
-		if (???)
+		if (B.x - A.x < epsilon || abs(D.x()-D_old.x())<gamma||solution::f_calls>Nmax)
 			return C;
 		D_old = D;
 	}

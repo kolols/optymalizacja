@@ -33,14 +33,30 @@ matrix *solve_ode(double t0, double dt, double tend, const matrix &Y0, matrix *u
 
 //You can edit the following code
 
-
 matrix diff(double t, const matrix &Y, matrix *ud, matrix *ad)
 {
 #if LAB_NO==1 && LAB_PART==1
-	
+	matrix dY(2, 1);
+	double m=1, f=2, k=1, b=0.5;
+	dY(0) = Y(1);
+	dY(1) = (f - b*Y(1) - k*Y(0)) / m;
+	return dY;
+
 #elif LAB_NO == 1 && LAB_PART == 2
 	
 #elif LAB_NO==2 && LAB_PART==3
+	double a = 0.98, b = 0.63, g = 9.81, PA = 1, TA = 90, PB = 1, DB = 0.00365665, Fin = 0.01, Tin = 10, DA = (*ad)();
+
+	double FAout = Y(0) > 0 ? a*b*DA*sqrt(2 * g*Y(0) / PA) : 0 ;
+	double FBout = Y(1) > 0 ? a*b*DB*sqrt(2 * g*Y(1) / PB) : 0 ;
+
+	matrix dY(3, 1);
+	dY(0) = -FAout;
+	dY(1) = FAout + Fin - FBout;
+	dY(2) = Fin / Y(1)*(Tin - Y(2))+ FAout/Y(1)*(TA - Y(2));
+
+	return dY;
+
 	
 #elif LAB_NO==3 && LAB_PART==3
 	

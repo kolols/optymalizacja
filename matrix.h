@@ -8,9 +8,6 @@
 #include<sstream>
 #include<fstream>
 #include<random>
-
-#include<math.h>
-#include <corecrt_math_defines.h>
 using namespace std;
 
 #define SEP_SYMBOL ','

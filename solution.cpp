@@ -60,11 +60,20 @@ void solution::fit_fun(matrix *ud, matrix *ad)
 {
 	++f_calls;
 #if LAB_NO==2 && (LAB_PART==1 || LAB_PART==2)
-
-	y = -cos(0.1*x())+pow(M_E, -0.01*x()*x()+0.4*x()*M_PI-4*M_PI*M_PI) +0.002*0.01*x()*x();    // x jest obiektem!!!
-	
+	y = -cos(0.1*x())*exp(-pow(0.1*x() - 2 * 3.14, 2)) + 0.002*pow(0.1*x(), 2);
 #elif LAB_NO==2 && LAB_PART==3
-	
+	matrix Y0 = matrix(3, new double[3]{ 5,1,10 });
+	matrix *Y = solve_ode(0, 1, 1000, Y0, ud, &x);//Y[0] - czas, Y[1] - funkcje
+	int n = get_len(Y[0]);
+	double max = Y[1](0, 2);
+
+	for (int i = 1; i < n; ++i)
+	{
+		if (max < Y[1](i, 2))
+			max = Y[1](i, 2);
+	}
+
+	y = abs(max - 50);
 #elif LAB_NO==3 && (LAB_PART==1 || LAB_PART==2)
 	
 #elif LAB_NO==3 && LAB_PART==3
