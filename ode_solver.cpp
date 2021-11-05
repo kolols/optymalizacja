@@ -34,13 +34,28 @@ matrix *solve_ode(double t0, double dt, double tend, const matrix &Y0, matrix *u
 //You can edit the following code
 
 
-matrix diff(double t, const matrix &Y, matrix *ud, matrix *ad)
+matrix diff(double t, const matrix &Y, matrix *ud, matrix *ad) //ud to y p to ad
 {
 #if LAB_NO==1 && LAB_PART==1
 	
 #elif LAB_NO == 1 && LAB_PART == 2
 	
 #elif LAB_NO==2 && LAB_PART==3
+	double a = 0.98, b = 0.63, g = 9.81, PA = 1, PB = 1,
+		Fin = -0.01, DB = 0.00365665, Tin = 10, TA = 90, TB = 10;
+	double DA = (*ad)(0);
+	DA = DA / 10000;
+	double VAout = Y(0) <= 0 ? 0 : -a * b * DA * sqrt(2 * g * Y(0) / PA);		//zmiana objetosi w a
+	double VBout = Y(1) <= 0 ? 0 : -a * b * DA * sqrt(2 * g * Y(1) / PB);		//zmiana objetosi w b
+	double TinB = (((-VAout * 1000) * 90) + (10 * 10)) / ((-VAout * 1000) + 10);	//temp wody wpadajacej do b
+	double TBdt = ((Fin - VAout) / Y(1)) * (TinB - Y(2));								// zmiana temp w b
+
+	matrix dY(Y);
+	dY(0) = VAout;
+	dY(1) = Fin + VBout - VAout;
+	dY(2) = TBdt;
+	return dY;
+
 	
 #elif LAB_NO==3 && LAB_PART==3
 	
