@@ -78,6 +78,7 @@ void solution::fit_fun(matrix* ud, matrix* ad)
 	y = abs(max-50);
 	++f_calls;
 #elif LAB_NO==3 && (LAB_PART==1 || LAB_PART==2)
+	y = pow(x(0), 2) + pow(x(1), 2) - cos(2.5 * M_PI * x(0)) - cos(2.5 * M_PI * x(1)) + 2;
 
 #elif LAB_NO==3 && LAB_PART==3
 

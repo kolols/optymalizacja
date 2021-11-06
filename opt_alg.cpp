@@ -138,32 +138,32 @@ solution lag(double a, double b, double epsilon, double gamma, int Nmax, matrix*
 #if LAB_NO>2
 solution HJ(matrix x0, double s, double alpha, double epsilon, int Nmax, matrix* ud, matrix* ad)
 {
-	solution XB(? ? ? ), XB_old, X;
+	solution XB(x0), XB_old, X;
 	XB.fit_fun(ud, ad);
 	while (true)
 	{
 		X = HJ_trial(XB, s, ud, ad);
-		if (? ? ? )
+		if (X.y < XB.y)
 		{
 			while (true)
 			{
-				? ? ? ;
-				? ? ? ;
+				XB_old = XB;
+				XB = X;
 #if LAB_NO==3 && LAB_PART==2
-				? ? ?
+				???
 #endif
-					? ? ?
+					X.x = XB.x + XB.x - XB_old.x;
 					X.fit_fun(ud, ad);
 				X = HJ_trial(X, s, ud, ad);
-				if (? ? ? )
+				if (X.y>=XB.y)
 					break;
-				if (? ? ? )
+				if (XB.f_calls>Nmax)
 					return XB;
 			}
 		}
 		else
-			? ? ? ;
-		if (? ? ? )
+			s *= alpha;
+		if (XB.f_calls > Nmax || s < epsilon)
 			return XB;
 	}
 }
@@ -175,16 +175,16 @@ solution HJ_trial(solution XB, double s, matrix* ud, matrix* ad)
 	solution X;
 	for (int i = 0; i < n; ++i)
 	{
-		X.x = ? ? ?
+		X.x = XB.x + s * D[i];
 			X.fit_fun(ud, ad);
-		if (? ? ? )
-			? ? ? ;
+			if (X.y < XB.y)
+				XB = X;
 		else
 		{
-			X.x = ? ? ?
+			X.x = XB.x - s * D[i];
 				X.fit_fun(ud, ad);
-			if (? ? ? )
-				? ? ? ;
+				if (X.y < XB.y)
+					XB = X;
 		}
 	}
 	return XB;
@@ -192,64 +192,65 @@ solution HJ_trial(solution XB, double s, matrix* ud, matrix* ad)
 
 solution Rosen(matrix x0, matrix s0, double alpha, double beta, double epsilon, int Nmax, matrix* ud, matrix* ad)
 {
-	solution X(? ? ? ), Xt;
+	solution X(x0), Xt;
 	int n = get_dim(X);
 	matrix l(n, 1), p(n, 1), s(s0), D = ident_mat(n);
 	X.fit_fun(ud, ad);
 	while (true)
 	{
-		for (int i = 0; i < ? ? ? ; ++i)
+		for (int i = 0; i < n ; ++i)
 		{
-			Xt.x = ? ? ? ;
+			Xt.x = X.x + s(i) * D[i];
 			Xt.fit_fun(ud, ad);
-			if (? ? ? )
+			if (Xt.y < X.y)
 			{
-				? ? ?
-					? ? ?
-					? ? ?
+				X = Xt;
+				l(i) += s(i);
+				s(i) *= alpha;
 			}
 			else
 			{
-				? ? ?
-					? ? ?
+				p(i) += 1;
+				s(i) *= (-beta);
 			}
 		}
 #if LAB_NO==3 && LAB_PART==2
 		? ? ?
 #endif
 			bool change = true;
-		for (int i = 0; i < ? ? ? ; ++i)
-			if (? ? ? || ? ? ? )
+		for (int i = 0; i < n; ++i)
+			if (l(i)!=0 || p(i)!=0 )	/// l || p
 			{
 				change = false;
 				break;
 			}
 		if (change)
 		{
-			matrix Q(? ? ? ), v(? ? ? );
-			for (int i = 0; ? ? ? ; ++i)
-				for (int j = 0; ? ? ? ; ++j)
-					Q(i, j) = ? ? ? ;
-			Q = ? ? ?
-				v = ? ? ?
-				D.set_col(? ? ? );
-			for (int i = 1; ? ? ? ; ++i)
+			matrix Q(n, n), v(n, 1);
+			for (int i = 0; i<n ; ++i)
+				for (int j = 0; j<=i ; ++j)
+					Q(i, j) = l(i);
+			Q = D * Q;
+			v = Q[0] / norm(Q[0]);
+			D.set_col(v, 0);							
+			for (int i = 1; i<n; ++i)
 			{
-				matrix temp(? ? ? );
-				for (int j = 0; ? ? ? ; ++j)
-					temp = ? ? ?
-					v = ? ? ?
-					D.set_col(? ? ? );
+				matrix temp(n, 1);
+				for (int j = 0; j<i ; ++j)
+					temp = trans(Q[j]) * D[j] * D[j];
+				v = Q[i] - temp / norm(Q[i] - temp);
+				D.set_col(v, i);					
 			}
-			? ? ?
-				? ? ?
-				? ? ?
+			s = s0;
+			l = 0;
+			p = 0;
+
 		}
 		double max_s = abs(s(0));
 		for (int i = 1; i < n; ++i)
 			if (max_s < abs(s(i)))
 				max_s = abs(s(i));
-		if (? ? ? )
+		if (solution::f_calls > Nmax || max_s <= epsilon)
 			return X;
 	}
 }

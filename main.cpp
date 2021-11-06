@@ -164,6 +164,21 @@ part_3.close();
 
 #elif LAB_NO==3 && LAB_PART==1
 
+double alpha = 0.5;				//dla hj 0.5		dla RS 0.5
+double beta = 0.5;		//uzywana tylko w RS
+double epsilon = 1e-3;
+double s = 0.1;					//0.1 0.5  1.0 dlugosci krokow
+double nmax = 1000;
+
+for (int i = 0; i < 100; i++) {
+	int x0 = rand() % 3 - 1;				//ustawić zakres na -1 do 1 
+	int x1 = rand() % 3 - 1;				//tez
+	cout << x0 << endl;
+	cout << x1 << endl;
+}
+
+
+
 #elif LAB_NO==3 && LAB_PART==2
 
 #elif LAB_NO==3 && LAB_PART==3
