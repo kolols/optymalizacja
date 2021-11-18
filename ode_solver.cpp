@@ -17,6 +17,7 @@ matrix *solve_ode(double t0, double dt, double tend, const matrix &Y0, matrix *u
 	for (int i = 0; i < n; ++i)
 		S[1](i, 0) = Y0(i);
 	matrix k1(n, 1), k2(n, 1), k3(n, 1), k4(n, 1);
+	//cout << N << endl;
 	for (int i = 1; i < N; ++i)
 	{
 		S[0](i) = S[0](i - 1) + dt;
@@ -26,6 +27,7 @@ matrix *solve_ode(double t0, double dt, double tend, const matrix &Y0, matrix *u
 		k4 = dt*diff(S[0](i - 1) + dt, S[1][i - 1] + k3, ud, ad);
 		for (int j = 0; j < n; ++j)
 			S[1](j, i) = S[1](j, i - 1) + (k1(j) + 2 * k2(j) + 2 * k3(j) + k4(j)) / 6;
+		//cout << S[0](i)<<endl;
 	}
 	S[1] = trans(S[1]);
 	return S;
@@ -34,7 +36,7 @@ matrix *solve_ode(double t0, double dt, double tend, const matrix &Y0, matrix *u
 //You can edit the following code
 
 
-matrix diff(double t, const matrix &Y, matrix *ud, matrix *ad) //ud to y p to ad
+matrix diff(double t, const matrix &Y, matrix *ud, matrix *ad) //ud to y p to ud
 {
 #if LAB_NO==1 && LAB_PART==1
 	
@@ -58,6 +60,14 @@ matrix diff(double t, const matrix &Y, matrix *ud, matrix *ad) //ud to y p to ad
 
 	
 #elif LAB_NO==3 && LAB_PART==3
+	matrix dY(2, 1);
+	double m_c = 10.0, m_r = 1.0, l = 0.5, b = 0.5, alfa_ref = M_PI, omega_ref = 0.0, I = (m_c * l * l) + ((m_r * l * l) / 3),
+		k1 = (*ud)(0), k2 =(*ud)(1);
+	double M = k1 * (alfa_ref - Y(0)) + k2 * (omega_ref - Y(1));
+
+	dY(0) = Y(1);
+	dY(1) = (M - b * Y(1)) / I;
+	return dY;
 	
 #elif LAB_NO==4 && LAB_PART==2
 	

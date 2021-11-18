@@ -79,10 +79,23 @@ void solution::fit_fun(matrix* ud, matrix* ad)
 	++f_calls;
 #elif LAB_NO==3 && (LAB_PART==1 || LAB_PART==2)
 	y = pow(x(0), 2) + pow(x(1), 2) - cos(2.5 * M_PI * x(0)) - cos(2.5 * M_PI * x(1)) + 2;
-	//y = 2.5 * pow((pow(x(0), 2) - x(1)), 2) + pow((1 - x(0)), 2);								//testowa funkcja
-	//y = pow(x(0), 2) + pow(x(1), 2) - (400 / (100 * pow(x(0), 2) + pow(x(1), 2) + 1));
-#elif LAB_NO==3 && LAB_PART==3
+	cout << x(0) << " " << x(1) << endl;
 
+#elif LAB_NO==3 && LAB_PART==3
+	double dt = 0.1;
+	matrix Y0 = matrix(2, new double[2]{ 0.0, 0.0 });
+	matrix P = matrix(2, new double[2]{ x(0), x(1) });
+	ud = &P;
+	matrix* Y = solve_ode(0, 0.1, 100, Y0, ud);
+	double m_c = 10.0, m_r = 1.0, l = 0.5, b = 0.5, alfa_ref = M_PI, omega_ref = 0.0, I = (m_c * l * l) + ((m_r * l * l) / 3),
+		k1 = P(0), k2 = P(1), M = 0.0, temp = 0.0;
+	int *n = get_size(Y[1]);
+	y = 0.0;
+	for (int i = 0; i < n[0]; i++) {
+		y = y + 10 * pow(alfa_ref - Y[1](i, 0), 2) + pow(omega_ref - Y[1](i, 1), 2) + pow(x(0) * (alfa_ref - Y[1](i, 0)) + x(1) * (omega_ref - Y[1](i, 1)), 2);
+	}
+	y = y * dt;
+	++f_calls;
 #elif LAB_NO==4 && LAB_PART==1
 
 #elif LAB_NO==4 && LAB_PART==2

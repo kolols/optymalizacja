@@ -214,6 +214,7 @@ solution Rosen(matrix x0, matrix s0, double alpha, double beta, double epsilon, 
 				s(i) *= (-beta);
 			}
 		}
+
 #if LAB_NO==3 && LAB_PART==2
 		? ? ?
 #endif

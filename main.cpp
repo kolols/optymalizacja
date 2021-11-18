@@ -168,9 +168,9 @@ part_3.close();
 double alpha = 0.5;						//dla hj 0.5		dla RS 0.5
 double beta = 0.5;					//uzywana tylko w RS
 double epsilon = 1e-3;					//1e-3
-double s = 1.0;					//0.1 0.5  1.0 dlugosci krokow
+double s = 0.5;					//0.1 0.5  1.0 dlugosci krokow
 double nmax = 1000;					//1000
-
+/*
 for (int i = 0; i < 100; i++) {
 	double x0 = (rand() % 201/100.f)-1;				//losowanie liczb z zakresu -1 do 1 jako double
 	double x1 = (rand() % 201/100.f)-1;				
@@ -189,31 +189,74 @@ for (int i = 0; i < 100; i++) {
 	ros << "q" << rs.x.operator()(0) << "q" << rs.x.operator()(1) << "q" << rs.y << "q" << solution::f_calls << "\n";
 	solution::clear_calls();
 
-}
+}*/solution::clear_calls();
 
-
-
-	/*							//do testowych funckji
-double x0 = -0.5;
-double x1 = 1;
+							//do testowych funckji
+double x0 = (rand() % 201 / 100.f) - 1;				//losowanie liczb z zakresu -1 do 1 jako double
+double x1 = (rand() % 201 / 100.f) - 1;
 matrix x = matrix(2, new double[2] { x0, x1 });
 solution hj= HJ(x, s, alpha, epsilon, nmax);
 
 cout << "x0 " << hj.x.operator()(0) << endl;
 cout << "x1 " << hj.x.operator()(1) << endl;
 cout << "y " << hj.y<< endl; 
+cout << solution::f_calls << endl;
+solution::clear_calls();
 matrix ss = matrix(2, new double[2]{ s,s });				//dla rs
 solution rs = Rosen(x, ss, alpha, beta, epsilon, nmax);
 cout << endl << "ROsen" << endl;
 cout << "x0 " << rs.x.operator()(0) << endl;
 cout << "x1 " << rs.x.operator()(1) << endl;
 cout << "y " << rs.y << endl;
-*/
+cout << solution::f_calls << endl;
+solution::clear_calls();
 
 
 #elif LAB_NO==3 && LAB_PART==2
 
+
 #elif LAB_NO==3 && LAB_PART==3
+
+
+double alpha = 0.5;						//dla hj 0.5		dla RS 0.5
+double beta = 0.5;					//uzywana tylko w RS
+double epsilon = 1e-3;					//1e-3
+double s = 0.5;					//0.1 0.5  1.0 dlugosci krokow
+double nmax = 1000;
+/*
+double k1 = rand() % 1001 / 100.f;
+double k2 = rand() % 1001 / 100.f;
+
+matrix k = matrix(2, new double[2]{ k1, k2 });
+solution hj = HJ(k, s, alpha, epsilon, nmax);
+cout << "hj" << endl;
+cout << hj << endl;
+solution::clear_calls;
+matrix ss = matrix(2, new double[2]{ s,s });				//dla rs
+solution rs = Rosen(k, ss, alpha, beta, epsilon, nmax);
+cout << "Rosen" << endl;
+cout << rs << endl;
+solution::clear_calls;*/
+
+
+//HJ
+//double k1 = 2.76883, k2 = 3.18289;
+//Rosenbrock
+double k1 = 2.89383, k2 = 3.40945;
+
+double t0 = 0, dt = 0.1, tend = 100;
+matrix K = matrix(2, new double[2]{ k1, k2 });
+matrix Y0 = matrix(2, new double[2]{ k1,k2 });
+
+matrix* Y = solve_ode(t0, dt, tend, Y0, &K);
+
+
+//cout << Y[0]<<endl;
+
+
+cout << Y[1] << endl;
+
+
 
 #elif LAB_NO==4 && LAB_PART==1
 
