@@ -79,7 +79,8 @@ void solution::fit_fun(matrix* ud, matrix* ad)
 	++f_calls;
 #elif LAB_NO==3 && (LAB_PART==1 || LAB_PART==2)
 	y = pow(x(0), 2) + pow(x(1), 2) - cos(2.5 * M_PI * x(0)) - cos(2.5 * M_PI * x(1)) + 2;
-
+	//y = 2.5 * pow((pow(x(0), 2) - x(1)), 2) + pow((1 - x(0)), 2);								//testowa funkcja
+	//y = pow(x(0), 2) + pow(x(1), 2) - (400 / (100 * pow(x(0), 2) + pow(x(1), 2) + 1));
 #elif LAB_NO==3 && LAB_PART==3
 
 #elif LAB_NO==4 && LAB_PART==1

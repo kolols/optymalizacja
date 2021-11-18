@@ -147,10 +147,10 @@ solution HJ(matrix x0, double s, double alpha, double epsilon, int Nmax, matrix*
 		{
 			while (true)
 			{
-				XB_old = XB;
+				XB_old = XB;			
 				XB = X;
 #if LAB_NO==3 && LAB_PART==2
-				???
+				????
 #endif
 					X.x = XB.x + XB.x - XB_old.x;
 					X.fit_fun(ud, ad);

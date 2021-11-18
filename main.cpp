@@ -13,8 +13,9 @@ int main()
 	ofstream Se("eks_0.csv");
 	ofstream Sf("fib_0.csv");
 	ofstream Sl("lag_0.csv");
-	
-
+	ofstream hjw("hj.csv");
+	ofstream ros("rs.csv");
+	ofstream x01("xo1.csv");
 
 
 	try
@@ -164,19 +165,50 @@ part_3.close();
 
 #elif LAB_NO==3 && LAB_PART==1
 
-double alpha = 0.5;				//dla hj 0.5		dla RS 0.5
-double beta = 0.5;		//uzywana tylko w RS
-double epsilon = 1e-3;
-double s = 0.1;					//0.1 0.5  1.0 dlugosci krokow
-double nmax = 1000;
+double alpha = 0.5;						//dla hj 0.5		dla RS 0.5
+double beta = 0.5;					//uzywana tylko w RS
+double epsilon = 1e-3;					//1e-3
+double s = 1.0;					//0.1 0.5  1.0 dlugosci krokow
+double nmax = 1000;					//1000
 
 for (int i = 0; i < 100; i++) {
-	int x0 = rand() % 3 - 1;				//ustawić zakres na -1 do 1 
-	int x1 = rand() % 3 - 1;				//tez
+	double x0 = (rand() % 201/100.f)-1;				//losowanie liczb z zakresu -1 do 1 jako double
+	double x1 = (rand() % 201/100.f)-1;				
+	matrix x = matrix(2, new double[2]{ x0, x1 });
+	solution hj = HJ(x, s, alpha, epsilon, nmax);
+	x0 = round(x0 * 100) / 100;						//czasami w funkcji rand liczba ma wiecej niz 2 miejsca po przecinku wiec ja zaokrgalmy do 2 miejsc
+	x1 = round(x1 * 100) / 100;
 	cout << x0 << endl;
 	cout << x1 << endl;
+	x01 << "q" << x0 << "q" << x1 << endl;		//q sluzy za rozdzielanie tekstu dla unikniecia bledow z bialym znakiem w excelu
+	hjw << "q" << hj.x.operator()(0) << "q" << hj.x.operator()(1) << "q" << hj.y<<"q"<< solution::f_calls << "\n";
+	solution::clear_calls();
+	matrix ss = matrix(2, new double[2]{ s,s });				//dla rs
+	solution rs = Rosen(x, ss, alpha, beta, epsilon, nmax);
+
+	ros << "q" << rs.x.operator()(0) << "q" << rs.x.operator()(1) << "q" << rs.y << "q" << solution::f_calls << "\n";
+	solution::clear_calls();
+
 }
 
+
+
+	/*							//do testowych funckji
+double x0 = -0.5;
+double x1 = 1;
+matrix x = matrix(2, new double[2] { x0, x1 });
+solution hj= HJ(x, s, alpha, epsilon, nmax);
+
+cout << "x0 " << hj.x.operator()(0) << endl;
+cout << "x1 " << hj.x.operator()(1) << endl;
+cout << "y " << hj.y<< endl; 
+matrix ss = matrix(2, new double[2]{ s,s });				//dla rs
+solution rs = Rosen(x, ss, alpha, beta, epsilon, nmax);
+cout << endl << "ROsen" << endl;
+cout << "x0 " << rs.x.operator()(0) << endl;
+cout << "x1 " << rs.x.operator()(1) << endl;
+cout << "y " << rs.y << endl;
+*/
 
 
 #elif LAB_NO==3 && LAB_PART==2
